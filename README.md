@@ -124,6 +124,16 @@ make xcode-run
 
 The first build can take a while because `NativServerKit` creates a relocatable Python runtime and installs the pinned `mlx-vlm` server dependencies into the framework resources. Later builds reuse the bundle until an input changes.
 
+`NATIV_SKIP_PYTHON_RESOURCE_BUILD` controls that step:
+
+| Value | Behavior |
+| --- | --- |
+| `NO` (default) | Build the embedded Python runtime and install the pinned server dependencies. |
+| `YES` | Reuse the server resource already present in the framework. Fails if it is missing or incomplete. |
+| `EXTERNAL` | Embed no server at all. The app must then be pointed at an `mlx-vlm-server` distribution supplied out of band — used by package managers that install the server as a shared dependency, and by dev builds running the server straight from a checkout. |
+
+Any other value is rejected with an error rather than silently falling back to a full build.
+
 Local builds are signed with the Apple Development identity configured in
 `Configuration/Signing.xcconfig` (or the ignored
 `Configuration/Signing.local.xcconfig` override). Keep the identity's login
