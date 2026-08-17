@@ -1876,11 +1876,11 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				465C23BB3ADA415A5004AAD9 /* Nativ */,
 				ED4CB78AB93E015D0BE21F7B /* NativExtensionSDK */,
 				1622B274F4DF5A85C2FDB081 /* NativServerKit */,
-				51AD42FA29E71F2450386688 /* NativTests */,
+				465C23BB3ADA415A5004AAD9 /* Nativ */,
 				7082E254E8272A5E8D13E6F0 /* VoiceDictationExtensionRuntime */,
+				51AD42FA29E71F2450386688 /* NativTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1967,7 +1967,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nif [[ \"${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}\" == \"YES\" ]]; then\n  resource_root=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Resources/mlx-vlm-server\"\n  if [[ ! -x \"${resource_root}/bin/mlx-vlm-server\" ]]; then\n    echo \"error: NATIV_SKIP_PYTHON_RESOURCE_BUILD requires an existing complete server resource at ${resource_root}\" >&2\n    exit 1\n  fi\n  exit 0\nfi\npython3 \"$SRCROOT/PythonDistribution/Scripts/build_xcode_framework_resource.py\"\n";
+			shellScript = "set -euo pipefail\nif [[ \"${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}\" == \"EXTERNAL\" ]]; then\n  echo \"note: NATIV_SKIP_PYTHON_RESOURCE_BUILD=EXTERNAL -- the server is provided out of band, not embedded\"\n  exit 0\nfi\nif [[ \"${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}\" == \"YES\" ]]; then\n  resource_root=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Resources/mlx-vlm-server\"\n  if [[ ! -x \"${resource_root}/bin/mlx-vlm-server\" ]]; then\n    echo \"error: NATIV_SKIP_PYTHON_RESOURCE_BUILD requires an existing complete server resource at ${resource_root}\" >&2\n    exit 1\n  fi\n  exit 0\nfi\nif [[ \"${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}\" != \"NO\" ]]; then\n  echo \"error: unrecognized NATIV_SKIP_PYTHON_RESOURCE_BUILD='${NATIV_SKIP_PYTHON_RESOURCE_BUILD}' (expected NO, YES, or EXTERNAL)\" >&2\n  exit 1\nfi\npython3 \"$SRCROOT/PythonDistribution/Scripts/build_xcode_framework_resource.py\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
