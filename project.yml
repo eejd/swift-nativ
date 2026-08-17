@@ -69,6 +69,10 @@ targets:
         basedOnDependencyAnalysis: false
         script: |
           set -euo pipefail
+          if [[ "${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}" == "EXTERNAL" ]]; then
+            echo "note: NATIV_SKIP_PYTHON_RESOURCE_BUILD=EXTERNAL — the server is provided out of band, not embedded"
+            exit 0
+          fi
           if [[ "${NATIV_SKIP_PYTHON_RESOURCE_BUILD:-NO}" == "YES" ]]; then
             resource_root="${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Resources/mlx-vlm-server"
             if [[ ! -x "${resource_root}/bin/mlx-vlm-server" ]]; then
