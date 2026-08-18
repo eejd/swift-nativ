@@ -12,6 +12,26 @@ if (($# != 1)); then
 fi
 
 readonly version="1.9.0"
+readonly output_directory="$1"
+
+# Caller-supplied binary (package managers, offline/sandboxed builds): install
+# it and its license instead of downloading. Nothing below this block runs.
+if [[ -n "${NATIV_GITHUB_MCP_SERVER:-}" ]]; then
+    [[ -x "$NATIV_GITHUB_MCP_SERVER" ]] || \
+        fail "NATIV_GITHUB_MCP_SERVER is not an executable file: $NATIV_GITHUB_MCP_SERVER"
+    if [[ -n "${NATIV_GITHUB_MCP_SERVER_LICENSE:-}" && ! -f "$NATIV_GITHUB_MCP_SERVER_LICENSE" ]]; then
+        fail "NATIV_GITHUB_MCP_SERVER_LICENSE is not a file: $NATIV_GITHUB_MCP_SERVER_LICENSE"
+    fi
+    mkdir -p "$output_directory"
+    install -m 755 "$NATIV_GITHUB_MCP_SERVER" "$output_directory/github-mcp-server"
+    if [[ -n "${NATIV_GITHUB_MCP_SERVER_LICENSE:-}" ]]; then
+        install -m 644 "$NATIV_GITHUB_MCP_SERVER_LICENSE" "$output_directory/github-mcp-server-LICENSE.txt"
+    else
+        echo "note: NATIV_GITHUB_MCP_SERVER_LICENSE unset; not bundling a GitHub MCP Server license file"
+    fi
+    echo "Installed GitHub MCP Server from $NATIV_GITHUB_MCP_SERVER"
+    exit 0
+fi
 
 case "$(uname -s):$(uname -m)" in
     Darwin:arm64)
@@ -41,7 +61,6 @@ esac
 
 readonly archive_name="github-mcp-server_${platform}_${architecture}.tar.gz"
 readonly download_url="https://github.com/github/github-mcp-server/releases/download/v${version}/${archive_name}"
-readonly output_directory="$1"
 readonly cache_directory="${DERIVED_FILE_DIR:-${TMPDIR:-/tmp}/nativ-derived}/github-mcp-server/${version}/${platform}_${architecture}"
 readonly archive_path="${cache_directory}/${archive_name}"
 readonly extracted_directory="${cache_directory}/extracted"
