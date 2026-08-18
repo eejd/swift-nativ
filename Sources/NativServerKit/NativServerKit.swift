@@ -134,12 +134,49 @@ public enum Nativ {
     private static let imageModelCapabilityManifestFilename =
         "image-model-capabilities.json"
 
+    /// Environment variable naming an external server distribution directory
+    /// (the layout `build_mlx_vlm_server.py` produces: `bin/mlx-vlm-server`,
+    /// `python/`, `image-model-capabilities.json`). Overrides everything else;
+    /// useful for development builds against a checkout.
+    public static let distributionEnvironmentKey = "NATIV_SERVER_DISTRIBUTION"
+    /// Info.plist key in the host app naming an external server distribution
+    /// directory. Set by builds that provide the server out of band (for
+    /// example a package manager that installs it as a shared dependency)
+    /// instead of embedding it in NativServerKit's resources.
+    public static let distributionInfoPlistKey = "NativServerDistribution"
+
     public static func distributionURL() throws -> URL {
+        if let override = externalDistributionURL() {
+            return override
+        }
         let bundle = Bundle(for: BundleToken.self)
         guard let url = bundle.url(forResource: "mlx-vlm-server", withExtension: nil) else {
             throw NativError.missingDistribution(bundle)
         }
         return url
+    }
+
+    /// The external distribution directory, if one is configured and exists.
+    /// Resolution order: `NATIV_SERVER_DISTRIBUTION` in the environment, then
+    /// `NativServerDistribution` in the main bundle's Info.plist. Empty values
+    /// and non-directories are ignored so the embedded resource stays the
+    /// fallback.
+    public static func externalDistributionURL() -> URL? {
+        let candidates: [String?] = [
+            ProcessInfo.processInfo.environment[distributionEnvironmentKey],
+            Bundle.main.object(forInfoDictionaryKey: distributionInfoPlistKey) as? String
+        ]
+        for case let path? in candidates {
+            let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { continue }
+            let expanded = (trimmed as NSString).expandingTildeInPath
+            var isDirectory: ObjCBool = false
+            if FileManager.default.fileExists(atPath: expanded, isDirectory: &isDirectory),
+               isDirectory.boolValue {
+                return URL(fileURLWithPath: expanded, isDirectory: true)
+            }
+        }
+        return nil
     }
 
     public static func executableURL() throws -> URL {

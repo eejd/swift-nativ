@@ -11,6 +11,11 @@ NATIV_SPARKLE_PUBLIC_KEY = A8x4wdNekd1aoWpU8bVdsNdOFzuua8nC1mfLCwGDSPk=
 // release CI configuration for distributed builds.
 NATIV_GITHUB_APP_CLIENT_ID =
 NATIV_GITHUB_APP_SLUG =
+// Directory of an external mlx-vlm-server distribution (bin/mlx-vlm-server,
+// python/, image-model-capabilities.json). Leave empty to use the server
+// embedded in NativServerKit; set it when the server is provided out of band
+// (pairs with NATIV_SKIP_PYTHON_RESOURCE_BUILD=EXTERNAL).
+NATIV_SERVER_DISTRIBUTION =
 
 DEVELOPMENT_TEAM = V8MWN7GKJ5
 CODE_SIGN_STYLE = Automatic
