@@ -12,9 +12,6 @@ settings:
     ARCHS: arm64
     ENABLE_HARDENED_RUNTIME: YES
 packages:
-  Sparkle:
-    url: https://github.com/sparkle-project/Sparkle
-    exactVersion: 2.9.4
   textual:
     url: https://github.com/gonzalezreal/textual.git
     exactVersion: 0.5.0
@@ -112,8 +109,6 @@ targets:
       - target: NativExtensionSDK
       - target: VoiceDictationExtensionRuntime
         embed: true
-      - package: Sparkle
-        product: Sparkle
       - package: textual
         product: Textual
     postBuildScripts:

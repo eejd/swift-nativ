@@ -1,7 +1,9 @@
 import AppKit
 import Combine
-import Sparkle
 import SwiftUI
+#if canImport(Sparkle)
+import Sparkle
+#endif
 
 @MainActor
 enum NativApplicationIcon {
@@ -22,6 +24,8 @@ enum NativApplicationIcon {
         image.setName(applicationIconName)
     }
 }
+
+#if canImport(Sparkle)
 
 @MainActor
 final class SoftwareUpdater {
@@ -69,3 +73,29 @@ struct CheckForUpdatesCommand: View {
         .disabled(!viewModel.canCheckForUpdates)
     }
 }
+
+#else
+
+// Built without the Sparkle package (e.g. a package-manager build where the
+// package manager owns upgrades). Keep the same surface so call sites compile
+// unchanged; the settings row explains where updates come from instead.
+@MainActor
+final class SoftwareUpdater {
+    var updater: SoftwareUpdater { self }
+
+    init() {
+        NativApplicationIcon.registerForInAppUse()
+    }
+}
+
+struct CheckForUpdatesCommand: View {
+    @MainActor
+    init(updater: SoftwareUpdater) {}
+
+    var body: some View {
+        Text("Updates are managed outside of Nativ.")
+            .foregroundStyle(.secondary)
+    }
+}
+
+#endif
